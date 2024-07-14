@@ -105,7 +105,6 @@ import { NextResponse } from "next/server";
 // }
 
 export async function GET() {
-  console.log('do nothing');
   return NextResponse.json({message: 'do nothing'});
   // try {
   //   await client.sql`BEGIN`;
