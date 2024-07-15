@@ -5,7 +5,12 @@ import Pagination from "@/app/ui/invoices/pagination";
 import InvoicesTable from "@/app/ui/invoices/table";
 import Search from "@/app/ui/search";
 import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
+import { Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+    title: 'Invoices | KK Acme Dashboard'
+}
 
 export default async function Invoices({ searchParams }: {
     searchParams?: {
