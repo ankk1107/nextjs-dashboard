@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { fetchInvoiceById } from './data';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
 const FormSchema = z.object({
     id: z.string(),
@@ -42,7 +44,6 @@ export async function createInvoice(formData: FormData) {
 
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 export async function updateInvoice(id: string, formData: FormData) {
-    console.log(id, formData);
     const { customerId, amount, status } = UpdateInvoice.parse({
         customerId: formData.get('customerId'),
         amount: formData.get('amount'),
@@ -66,9 +67,7 @@ export async function updateInvoice(id: string, formData: FormData) {
     redirect('/dashboard/invoices');
 }
 
-export async function deleteInvoice(id: string) {
-    throw new Error('fail to delete invoice');
-    
+export async function deleteInvoice(id: string) {    
     try{
         await sql`DELETE from invoices where id = ${id}`;
     }catch(e){
@@ -77,4 +76,20 @@ export async function deleteInvoice(id: string) {
         }
     }
     revalidatePath('/dashboard/invoices');
+}
+
+export async function authenticate(prevState: string | undefined, formData: FormData) {
+    try{
+        await signIn('credentials', formData)
+    }catch(error){
+        if(error instanceof AuthError){
+            switch(error.type){
+                case 'CredentialsSignin':
+                    return 'Invalid credential';
+                default: 
+                    return 'Something weng wrong';
+            }
+        }
+        throw error;
+    }
 }
